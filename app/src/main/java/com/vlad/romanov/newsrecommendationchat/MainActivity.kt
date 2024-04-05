@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.vlad.romanov.newsrecommendationchat.ui.theme.NewsRecommendationChatTheme
+import com.vlad.romanov.newsrecommendationchat.widgets.NewsArticleWidget
+import com.vlad.romanov.newsrecommendationchat.widgets.NewsFeed
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,25 +24,23 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    NewsFeedPreview()
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun NewsFeedPreview() {
     NewsRecommendationChatTheme {
-        Greeting("Android")
+        val dummyArticles = listOf(
+            NewsArticle("Title 1", "Description 1", "URL 1"),
+            NewsArticle("Title 2", "Description 2", "URL 2"),
+            NewsArticle("Title 3", "Description 3", "URL 3"),
+            NewsArticle("Title 4", "Description 4", "URL 4")
+        )
+        NewsFeed(dummyArticles)
     }
 }
