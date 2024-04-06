@@ -3,7 +3,6 @@ package com.vlad.romanov.newsrecommendationchat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.vlad.romanov.newsrecommendationchat.data.recAPI.ApiResponse
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.ArticlesRecommendationInstance
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.Recommendation
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.RecommendationInstance
@@ -18,15 +17,21 @@ The liveData builder function is a convenient way to instantiate a LiveData obje
 when working with coroutines. It provides a simpler and more concise way to work with data that
 needs to be fetched asynchronously and observed by UI components.
  */
-
 class RecommendationViewModel : ViewModel() {
 
-    val recommendation: LiveData<Response<ApiResponse>> = liveData(Dispatchers.IO) {
+    val recommendation: LiveData<List<NewsArticle>> = liveData(Dispatchers.IO) {
         try {
             val response = ArticlesRecommendationInstance.recommendationService.getArticles()
-            emit(response)
+            if (response.isSuccessful) {
+                // Directly emit the body if it's not null, or an empty list otherwise.
+                emit(response.body() ?: listOf())
+            } else {
+                // Emit an empty list if the response is not successful.
+                emit(listOf<NewsArticle>())
+            }
         } catch (e: Exception) {
-            throw e
+            // In case of exception, emit an empty list to avoid crashing the app.
+            emit(listOf<NewsArticle>())
         }
     }
 
@@ -35,7 +40,7 @@ class RecommendationViewModel : ViewModel() {
         return RecommendationInstance.recommendationService.getRecommendation()
     }
 
-    suspend fun getRecommendedArticles(): Response<ApiResponse> {
+    suspend fun getRecommendedArticles(): Response<List<NewsArticle>> {
         return ArticlesRecommendationInstance.recommendationService.getArticles()
     }
 }
