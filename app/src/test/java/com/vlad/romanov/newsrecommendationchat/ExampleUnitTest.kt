@@ -1,5 +1,6 @@
 package com.vlad.romanov.newsrecommendationchat
 
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -13,5 +14,13 @@ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
+    }
+
+    @Test
+    fun test_api_call() {
+        runBlocking {
+            val rec_view_model = RecommendationViewModel()
+            println(rec_view_model.getRecommendation().body()?.testingString)
+        }
     }
 }
