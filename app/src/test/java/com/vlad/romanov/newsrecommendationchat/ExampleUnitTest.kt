@@ -23,4 +23,12 @@ class ExampleUnitTest {
             println(rec_view_model.getRecommendation().body()?.testingString)
         }
     }
+
+    @Test
+    fun test_api_call_articles() {
+        runBlocking {
+            val rec_view_model = RecommendationViewModel()
+            println(rec_view_model.getRecommendedArticles().body()?.title)
+        }
+    }
 }

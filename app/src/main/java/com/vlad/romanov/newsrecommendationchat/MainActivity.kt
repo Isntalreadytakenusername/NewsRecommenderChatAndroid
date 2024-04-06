@@ -3,6 +3,80 @@ package com.vlad.romanov.newsrecommendationchat
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.vlad.romanov.newsrecommendationchat.ui.theme.NewsRecommendationChatTheme
+import androidx.compose.foundation.lazy.items
+
+// Data class to model each individual news article
+
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            NewsRecommendationChatTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    RecommendationScreen()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RecommendationScreen(viewModel: RecommendationViewModel = viewModel()) {
+    // Assuming viewModel.recommendation is LiveData<List<NewsArticle>>
+    val articles = viewModel.recommendation.observeAsState(initial = listOf<NewsArticle>())
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(articles.value) { article ->
+            NewsArticleWidget(newsArticle = article)
+        }
+    }
+}
+
+@Composable
+fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier) {
+    Card(modifier = modifier.padding(8.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Text(text = newsArticle.title, style = MaterialTheme.typography.titleLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = newsArticle.summary, style = MaterialTheme.typography.bodyMedium, maxLines = 4, overflow = TextOverflow.Ellipsis)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Published: ${newsArticle.published}", style = MaterialTheme.typography.bodySmall)
+            Spacer(modifier = Modifier.height(4.dp))
+            ClickableText(
+                text = androidx.compose.ui.text.AnnotatedString("Read more at ${newsArticle.domain}"),
+                style = MaterialTheme.typography.bodySmall.copy(color = Color.Blue),
+                onClick = { /* Implement action to open article link */ }
+            )
+        }
+    }
+}
+
+
+/*
+
+package com.vlad.romanov.newsrecommendationchat
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,26 +111,20 @@ fun RecommendationScreen(viewModel: RecommendationViewModel = viewModel()) {
     // subscribe to the changes in the view model
     val recommendation = viewModel.recommendation.observeAsState()
 
-    // Check if the recommendation is not null and is successful
-    if (recommendation.value?.isSuccessful == true) {
-        // Assuming your Recommendation object can be displayed as a String
-        // Adjust this to fit the structure of your Recommendation object
-        Text(text = recommendation.value?.body()?.testingString ?: "No data")
-    } else {
-        Text(text = "Failed to fetch data")
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    NewsRecommendationChatTheme {
-        RecommendationScreen()
-    }
 }
 
 
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    NewsRecommendationChatTheme {
+//        RecommendationScreen()
+//    }
+//}
 
+
+*/
 
 
 

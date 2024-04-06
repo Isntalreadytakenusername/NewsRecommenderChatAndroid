@@ -3,6 +3,8 @@ package com.vlad.romanov.newsrecommendationchat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import com.vlad.romanov.newsrecommendationchat.data.recAPI.ApiResponse
+import com.vlad.romanov.newsrecommendationchat.data.recAPI.ArticlesRecommendationInstance
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.Recommendation
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.RecommendationInstance
 import kotlinx.coroutines.Dispatchers
@@ -19,9 +21,9 @@ needs to be fetched asynchronously and observed by UI components.
 
 class RecommendationViewModel : ViewModel() {
 
-    val recommendation: LiveData<Response<Recommendation>> = liveData(Dispatchers.IO) {
+    val recommendation: LiveData<Response<ApiResponse>> = liveData(Dispatchers.IO) {
         try {
-            val response = RecommendationInstance.recommendationService.getRecommendation()
+            val response = ArticlesRecommendationInstance.recommendationService.getArticles()
             emit(response)
         } catch (e: Exception) {
             throw e
@@ -31,5 +33,9 @@ class RecommendationViewModel : ViewModel() {
     // testing function
     suspend fun getRecommendation(): Response<Recommendation> {
         return RecommendationInstance.recommendationService.getRecommendation()
+    }
+
+    suspend fun getRecommendedArticles(): Response<ApiResponse> {
+        return ArticlesRecommendationInstance.recommendationService.getArticles()
     }
 }
