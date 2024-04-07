@@ -20,8 +20,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vlad.romanov.newsrecommendationchat.ui.theme.NewsRecommendationChatTheme
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.rememberNavController
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.InteractionData
 import com.vlad.romanov.newsrecommendationchat.ui.theme.AppColorScheme
+import com.vlad.romanov.newsrecommendationchat.widgets.MainScreen
+import com.vlad.romanov.newsrecommendationchat.widgets.Screen
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -46,7 +49,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = myColorScheme.background
                 ) {
-                    RecommendationScreen()
+                    //RecommendationScreen()
+                    MainScreen()
                 }
             }
         }
