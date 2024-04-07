@@ -3,11 +3,16 @@ package com.vlad.romanov.newsrecommendationchat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.ApiResponse
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.ArticlesRecommendationInstance
+import com.vlad.romanov.newsrecommendationchat.data.recAPI.ClickSubmitRetrofitClient
+import com.vlad.romanov.newsrecommendationchat.data.recAPI.InteractionData
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.Recommendation
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.RecommendationInstance
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 /*
 LiveData is a part of the Android Jetpack's Architecture components.
@@ -19,6 +24,24 @@ when working with coroutines. It provides a simpler and more concise way to work
 needs to be fetched asynchronously and observed by UI components.
  */
 class RecommendationViewModel : ViewModel() {
+
+    fun sendInteractionData(interactionData: InteractionData) {
+        viewModelScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    ClickSubmitRetrofitClient.instance.submitInteractionData(interactionData)
+                }
+                // Check response status
+                if (response.status == "success") {
+                    println("Interaction data submitted successfully")
+                } else {
+                    println("Failed to submit interaction data")
+                }
+            } catch (e: Exception) {
+                throw Exception("Error submitting interaction data: ${e.localizedMessage}")
+            }
+        }
+    }
 
     val recommendation: LiveData<ArticleState> = liveData(Dispatchers.IO) {
         emit(ArticleState.Loading) // Emit loading state
