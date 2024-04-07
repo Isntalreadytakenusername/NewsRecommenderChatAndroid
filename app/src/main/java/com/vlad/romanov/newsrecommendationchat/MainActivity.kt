@@ -38,17 +38,45 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+
 @Composable
 fun RecommendationScreen(viewModel: RecommendationViewModel = viewModel()) {
-    // Assuming viewModel.recommendation is LiveData<List<NewsArticle>>
-    val articles = viewModel.recommendation.observeAsState(initial = listOf<NewsArticle>())
+    val state = viewModel.recommendation.observeAsState()
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(articles.value) { article ->
-            NewsArticleWidget(newsArticle = article)
+    when (val currentState = state.value) {
+        is ArticleState.Loading -> {
+            // Display a loading indicator
+            CircularProgressIndicator()
+        }
+        is ArticleState.Success -> {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(currentState.articles) { article ->
+                    NewsArticleWidget(newsArticle = article)
+                }
+            }
+        }
+        is ArticleState.Error -> {
+            // Display an error message
+            Text(text = currentState.message)
+        }
+        null -> {
+            // Optional: Handle initial state or loading state
         }
     }
 }
+
+//@Composable
+//fun RecommendationScreen(viewModel: RecommendationViewModel = viewModel()) {
+//    // Assuming viewModel.recommendation is LiveData<List<NewsArticle>>
+//    val articles = viewModel.recommendation.observeAsState(initial = listOf<NewsArticle>())
+//
+//    LazyColumn(modifier = Modifier.fillMaxSize()) {
+//        items(articles.value) { article ->
+//            NewsArticleWidget(newsArticle = article)
+//        }
+//    }
+//}
 
 @Composable
 fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier) {

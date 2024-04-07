@@ -3,6 +3,7 @@ package com.vlad.romanov.newsrecommendationchat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import com.vlad.romanov.newsrecommendationchat.data.recAPI.ApiResponse
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.ArticlesRecommendationInstance
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.Recommendation
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.RecommendationInstance
@@ -19,28 +20,53 @@ needs to be fetched asynchronously and observed by UI components.
  */
 class RecommendationViewModel : ViewModel() {
 
-    val recommendation: LiveData<List<NewsArticle>> = liveData(Dispatchers.IO) {
+    val recommendation: LiveData<ArticleState> = liveData(Dispatchers.IO) {
+        emit(ArticleState.Loading) // Emit loading state
         try {
             val response = ArticlesRecommendationInstance.recommendationService.getArticles()
-            if (response.isSuccessful) {
-                // Directly emit the body if it's not null, or an empty list otherwise.
-                emit(response.body() ?: listOf())
+            if (response.isSuccessful && response.body() != null) {
+                emit(ArticleState.Success(convertApiResponseToNewsArticles(response.body()!!)))
             } else {
-                // Emit an empty list if the response is not successful.
-                emit(listOf<NewsArticle>())
+                emit(ArticleState.Error("Failed to fetch articles"))
             }
         } catch (e: Exception) {
-            // In case of exception, emit an empty list to avoid crashing the app.
-            emit(listOf<NewsArticle>())
+            emit(ArticleState.Error("Error fetching articles: ${e.localizedMessage}"))
         }
     }
+    // Example processing logic (to be adapted as needed)
+    private fun convertApiResponseToNewsArticles(response: ApiResponse): List<NewsArticle> {
+        val articles = mutableListOf<NewsArticle>()
+        for (i in response.distance.indices) {
+            articles.add(
+                NewsArticle(
+                    distance = response.distance[i],
+                    domain = response.domain[i],
+                    link = response.link[i],
+                    published = response.published[i],
+                    summary = response.summary[i],
+                    title = response.title[i],
+                    explanation = response.explanations[i]
+                )
+            )
+        }
+        return articles
+    }
+
 
     // testing function
     suspend fun getRecommendation(): Response<Recommendation> {
         return RecommendationInstance.recommendationService.getRecommendation()
     }
 
-    suspend fun getRecommendedArticles(): Response<List<NewsArticle>> {
+    suspend fun getRecommendedArticles(): Response<ApiResponse> {
         return ArticlesRecommendationInstance.recommendationService.getArticles()
     }
 }
+
+// Sealed class to represent the different states of the articles.
+sealed class ArticleState {
+    object Loading : ArticleState()
+    data class Success(val articles: List<NewsArticle>) : ArticleState()
+    data class Error(val message: String) : ArticleState()
+}
+
