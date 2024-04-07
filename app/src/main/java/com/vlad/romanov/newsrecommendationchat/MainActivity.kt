@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
@@ -20,9 +21,19 @@ import com.vlad.romanov.newsrecommendationchat.ui.theme.NewsRecommendationChatTh
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.InteractionData
+import com.vlad.romanov.newsrecommendationchat.ui.theme.AppColorScheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+// initialise a global color scheme
+val myColorScheme = AppColorScheme.fromHex(
+    background = "#0E1117",
+    itemTextBox = "#262730",
+    textNormal = "#818285",
+    textHighlight = "#F8CBAD"
+)
+
 
 
 class MainActivity : ComponentActivity() {
@@ -33,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = myColorScheme.background
                 ) {
                     RecommendationScreen()
                 }
@@ -75,17 +86,22 @@ fun RecommendationScreen(viewModel: RecommendationViewModel = viewModel()) {
 fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier, viewModel: RecommendationViewModel = viewModel()) {
     val context = LocalContext.current
 
-    Card(modifier = modifier.padding(8.dp)) {
+    Card(modifier = modifier.padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = myColorScheme.itemTextBox,
+        )) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(text = newsArticle.title, style = MaterialTheme.typography.titleLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(text = newsArticle.title, style = MaterialTheme.typography.titleLarge.copy(color = myColorScheme.textHighlight),
+                maxLines = 2, overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = newsArticle.summary, style = MaterialTheme.typography.bodyMedium, maxLines = 4, overflow = TextOverflow.Ellipsis)
+            Text(text = newsArticle.summary, style = MaterialTheme.typography.bodyMedium.copy(color = myColorScheme.textNormal),
+                maxLines = 4, overflow = TextOverflow.Ellipsis)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Published: ${newsArticle.published}", style = MaterialTheme.typography.bodySmall)
+            Text(text = "Published: ${newsArticle.published}", style = MaterialTheme.typography.bodySmall.copy(color = myColorScheme.textNormal))
             Spacer(modifier = Modifier.height(4.dp))
             ClickableText(
                 text = androidx.compose.ui.text.AnnotatedString("Read more at ${newsArticle.link}"),
-                style = MaterialTheme.typography.bodySmall.copy(color = Color.Blue),
+                style = MaterialTheme.typography.bodySmall.copy(color = myColorScheme.textHighlight),
                 onClick = {
                     val interactionData = InteractionData(
                         user_id = "user_1", // later replace with actual user ID

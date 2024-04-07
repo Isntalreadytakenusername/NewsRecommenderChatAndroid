@@ -15,6 +15,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+// initialise a global color scheme
+val myColorScheme = AppColorScheme.fromHex(
+    background = "#0E1117",
+    itemTextBox = "#262730",
+    textNormal = "#818285",
+    textHighlight = "#F8CBAD"
+)
+
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
@@ -57,7 +65,7 @@ fun NewsRecommendationChatTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
+            window.statusBarColor = myColorScheme.background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
