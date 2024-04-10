@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun RecommendationScreen(viewModel: RecommendationViewModel = viewModel()) {
+fun RecommendationScreen(viewModel: SingleViewModel = viewModel()) {
     val state = viewModel.recommendation.observeAsState()
 
     when (val currentState = state.value) {
@@ -87,7 +87,7 @@ fun RecommendationScreen(viewModel: RecommendationViewModel = viewModel()) {
 
 
 @Composable
-fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier, viewModel: RecommendationViewModel = viewModel()) {
+fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier, viewModel: SingleViewModel = viewModel()) {
     val context = LocalContext.current
 
     Card(modifier = modifier.padding(8.dp),

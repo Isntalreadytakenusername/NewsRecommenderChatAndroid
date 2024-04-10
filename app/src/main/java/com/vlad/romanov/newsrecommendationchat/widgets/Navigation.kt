@@ -16,8 +16,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.vlad.romanov.newsrecommendationchat.RecommendationScreen
+import com.vlad.romanov.newsrecommendationchat.SingleViewModel
 import com.vlad.romanov.newsrecommendationchat.widgets.chat.ChatScreen
-import com.vlad.romanov.newsrecommendationchat.widgets.chat.ChatViewModel
+
 
 
 @Composable
@@ -57,7 +58,7 @@ fun currentRoute(navController: NavHostController): String? {
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    var chatViewModel = ChatViewModel()
+    var chatViewModel = SingleViewModel()
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
