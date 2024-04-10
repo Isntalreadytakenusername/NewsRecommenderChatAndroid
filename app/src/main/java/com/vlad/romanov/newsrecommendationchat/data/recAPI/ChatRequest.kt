@@ -5,31 +5,30 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-data class InteractionData(
+data class ChatRequestData(
     val user_id: String,
-    val title: String,
-    val date: String,
-    val domain: String
+    val request: String
 )
 
-data class ClickSubmitResponse(
-    val status: String
+data class ChatRequestResponse(
+    val response: String
 )
 
-interface ClickSubmit {
-    @POST("/submit_user_click/")
-    suspend fun submitInteractionData(@Body interactionData: InteractionData): ClickSubmitResponse
+interface ChatRequest {
+    @POST("/adjust_recommendations/")
+    suspend fun submitChatRequest(@Body chatRequestData: ChatRequestData): ChatRequestResponse
 }
 
-object ClickSubmitRetrofitClient {
+object ChatRequestRetrofitClient {
     private const val BASE_URL = "http://51.20.85.27"
 
-    val instance: ClickSubmit by lazy {
+    val instance: ChatRequest by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ClickSubmit::class.java)
+            .create(ChatRequest::class.java)
     }
 }
+
 
