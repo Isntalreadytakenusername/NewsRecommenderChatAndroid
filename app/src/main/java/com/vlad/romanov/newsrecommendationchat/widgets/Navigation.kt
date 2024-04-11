@@ -7,8 +7,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -59,6 +62,8 @@ fun currentRoute(navController: NavHostController): String? {
 fun MainScreen() {
     val navController = rememberNavController()
     var chatViewModel = SingleViewModel()
+    val recommendationState by chatViewModel.recommendation.collectAsState()
+//    val chatState = chatViewModel.state.collectAsState().value
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
@@ -68,8 +73,8 @@ fun MainScreen() {
             startDestination = Screen.Feed.route,
             modifier = Modifier.padding(innerPadding) // Apply the inner padding here
         ) {
-            composable(Screen.Feed.route) { RecommendationScreen() }
-            composable(Screen.Chat.route) { ChatScreen(chatViewModel) }
+            composable(Screen.Feed.route) { RecommendationScreen(recommendationState=recommendationState) }
+            composable(Screen.Chat.route) { ChatScreen(viewModel = chatViewModel) }
         }
     }
 }

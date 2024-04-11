@@ -32,8 +32,8 @@ needs to be fetched asynchronously and observed by UI components.
  */
 class SingleViewModel : ViewModel() {
 
-    private val _recommendation = MutableLiveData<ArticleState>()
-    val recommendation: LiveData<ArticleState> = _recommendation
+    private val _recommendation = MutableStateFlow<ArticleState>(ArticleState.Loading)
+    val recommendation: StateFlow<ArticleState> = _recommendation.asStateFlow()
     fun sendInteractionData(interactionData: InteractionData) {
         viewModelScope.launch {
             try {
@@ -54,16 +54,16 @@ class SingleViewModel : ViewModel() {
 
     private fun loadRecommendations() {
         viewModelScope.launch(Dispatchers.IO) {
-            _recommendation.postValue(ArticleState.Loading)
+            _recommendation.value = ArticleState.Loading
             try {
                 val response = ArticlesRecommendationInstance.recommendationService.getArticles()
                 if (response.isSuccessful && response.body() != null) {
-                    _recommendation.postValue(ArticleState.Success(convertApiResponseToNewsArticles(response.body()!!)))
+                    _recommendation.value = ArticleState.Success(convertApiResponseToNewsArticles(response.body()!!))
                 } else {
-                    _recommendation.postValue(ArticleState.Error("Failed to fetch articles"))
+                    _recommendation.value = ArticleState.Error("Failed to fetch articles")
                 }
             } catch (e: Exception) {
-                _recommendation.postValue(ArticleState.Error("Error fetching articles: ${e.localizedMessage}"))
+                _recommendation.value = ArticleState.Error("Error fetching articles: ${e.localizedMessage}")
             }
         }
     }
@@ -134,6 +134,7 @@ class SingleViewModel : ViewModel() {
     }
 }
 
+// Sealed class to represent the different states of the articles.
 // Sealed class to represent the different states of the articles.
 sealed class ArticleState {
     object Loading : ArticleState()

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vlad.romanov.newsrecommendationchat.ui.theme.NewsRecommendationChatTheme
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.State
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.InteractionData
@@ -60,27 +61,24 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun RecommendationScreen(viewModel: SingleViewModel = viewModel()) {
-    val state = viewModel.recommendation.observeAsState()
+fun RecommendationScreen(recommendationState: ArticleState) {
+//    val state = viewModel.recommendation.observeAsState()
 
-    when (val currentState = state.value) {
+    when (recommendationState) {
         is ArticleState.Loading -> {
             // Display a loading indicator
             CircularProgressIndicator()
         }
         is ArticleState.Success -> {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(currentState.articles) { article ->
+                items((recommendationState as ArticleState.Success).articles) { article ->
                     NewsArticleWidget(newsArticle = article)
                 }
             }
         }
         is ArticleState.Error -> {
             // Display an error message
-            Text(text = currentState.message)
-        }
-        null -> {
-            // Handle initial state or loading state
+            Text(text = (recommendationState as ArticleState.Error).message)
         }
     }
 }
