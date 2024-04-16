@@ -20,10 +20,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.vlad.romanov.newsrecommendationchat.RecommendationScreen
 import com.vlad.romanov.newsrecommendationchat.SingleViewModel
+import com.vlad.romanov.newsrecommendationchat.ui.theme.AppColorScheme
 import com.vlad.romanov.newsrecommendationchat.widgets.chat.ChatScreen
 
 
-
+val myColorScheme = AppColorScheme.fromHex(
+    background = "#0E1117",
+    itemTextBox = "#262730",
+    textNormal = "#818285",
+    textHighlight = "#F8CBAD"
+)
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(Screen.Feed, Screen.Chat)

@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
@@ -20,6 +21,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vlad.romanov.newsrecommendationchat.ui.theme.NewsRecommendationChatTheme
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.vlad.romanov.newsrecommendationchat.data.recAPI.InteractionData
@@ -87,6 +92,7 @@ fun RecommendationScreen(recommendationState: ArticleState) {
 @Composable
 fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier, viewModel: SingleViewModel = viewModel()) {
     val context = LocalContext.current
+    var showExplanation by remember { mutableStateOf(false) }  // State to track visibility of the explanation
 
     Card(modifier = modifier.padding(8.dp),
         colors = CardDefaults.cardColors(
@@ -101,6 +107,23 @@ fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier, v
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Published: ${newsArticle.published}", style = MaterialTheme.typography.bodySmall.copy(color = myColorScheme.textNormal))
             Spacer(modifier = Modifier.height(4.dp))
+
+            // Toggle button or text for showing explanation
+            Text(
+                text = if (showExplanation) "Hide explanation" else "Why was this recommended?",
+                style = MaterialTheme.typography.bodySmall.copy(color = myColorScheme.textHighlight),
+                modifier = Modifier.clickable { showExplanation = !showExplanation }
+            )
+
+            // Conditional visibility of the explanation
+            if (showExplanation) {
+                Text(
+                    text = newsArticle.explanation,
+                    style = MaterialTheme.typography.bodySmall.copy(color = myColorScheme.textNormal)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
             ClickableText(
                 text = androidx.compose.ui.text.AnnotatedString("Read more at ${newsArticle.link}"),
                 style = MaterialTheme.typography.bodySmall.copy(color = myColorScheme.textHighlight),
@@ -108,7 +131,7 @@ fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier, v
                     val interactionData = InteractionData(
                         user_id = "user_1", // later replace with actual user ID
                         title = newsArticle.title,
-                        date = getCurrentDate(),// get actual current date
+                        date = getCurrentDate(), // get actual current date
                         domain = newsArticle.domain
                     )
                     viewModel.sendInteractionData(interactionData)
@@ -118,11 +141,12 @@ fun NewsArticleWidget(newsArticle: NewsArticle, modifier: Modifier = Modifier, v
                         data = Uri.parse(newsArticle.link)
                     }
                     context.startActivity(intent)
-                 }
+                }
             )
         }
     }
 }
+
 
 
 
